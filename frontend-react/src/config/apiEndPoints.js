@@ -1,0 +1,12 @@
+const CATEGORY_ENDPOINT = '/category';
+const CHANNEL_ENDPOINT = '/channel';
+const MESSAGE_ENDPOINT = '/message';
+const NOTIFICATION_ENDPOINT = '/notification';
+
+
+export {
+  CATEGORY_ENDPOINT,
+  CHANNEL_ENDPOINT,
+  MESSAGE_ENDPOINT,
+  NOTIFICATION_ENDPOINT
+};
