@@ -1,0 +1,24 @@
+spring:
+  application:
+    name:
+      spring-boot-backend
+  #h2 datasource for default enviroment:
+  datasource:
+#    url: jdbc:h2:~/notificationDb
+    url: jdbc:h2:file:./data/notificationDb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  #JPA
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: create-drop #update
+  #h2 console for minor testing
+  h2:
+    console:
+      path: '/dbconsole'
+      enabled: true
+
+server:
+  port: ${PORT:8080}

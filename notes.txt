@@ -1,0 +1,21 @@
+Notification Test Notes
+
+General Design 
+
+- Receives Messages: Has Category and Body
+- Messages have to be forwarded to users (can be generated on bootstrap)
+- Users can be subscribed to message categories
+- Users can choose channels to be notified: SMS, Email or Push Notification
+** Users can only receive notifications through the channels they want and
+	from the categories they're subscribed to.
+
+- 3 Bootstrap categories: Sports - Finance - Movies
+- 3 Bootstrap notifications: SMS - E-mail - Push Notification
+- No 3rd party management. Make logic from scratch
+- Store relevant information to verify that the notification has been delivered:
+  Message Type | Notification Type | User data | timestamp | anything else
+  
+UI
+
+- Message Form
+- Log history: A list of all data records in the log, sorted from newest to oldest. 
