@@ -72,6 +72,9 @@ public class Utilities {
     }
 
     public static String capitalizeEachWord(String input) {
+
+        if(input == null)
+            return "";
         return Arrays.stream(input.split("\\s+"))
                 .map(word -> Character.toUpperCase(word.charAt(0)) + word.substring(1))
                 .collect(Collectors.joining(" "));

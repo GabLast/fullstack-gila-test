@@ -1,29 +1,12 @@
 import axios from 'axios';
 
-const apiClient = axios.create({
-    baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api',
+export const ApiClient = axios.create({
+    baseURL: process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api",
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
     },
 });
-
-export const postRequest = async ({ url, params, body }) => {
-  const response = await apiClient.post(url, {
-    params: params,
-    data: body,
-  });
-
-  return response.data;
-};
-
-export const getRequest = async ({ url, params }) => {
-  const response = await apiClient.get(url, {
-    params: params,
-  });
-
-  return response.data;
-};
 
 // // Optional: Add a request interceptor
 // apiClient.interceptors.request.use(
@@ -46,5 +29,3 @@ export const getRequest = async ({ url, params }) => {
 //         return Promise.reject(error);
 //     }
 // );
-
-export default apiClient;

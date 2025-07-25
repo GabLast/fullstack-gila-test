@@ -1,5 +1,5 @@
-import { NavLink } from 'react-router';
-import { HOME,  MESSAGE_FORM, NOTIFICATION_TAB } from '../config/routes';
+import { NavLink } from "react-router";
+import { HOME, MESSAGE_FORM, NOTIFICATION_TAB } from '../config/routes';
 
 const navItems = [
   { name: 'Home', path: HOME },
@@ -9,25 +9,24 @@ const navItems = [
 
 function SideNav() {
   return (
-    <nav className="h-screen w-64 bg-gray-800 text-white flex flex-col py-8">
-      <div className="mb-8 px-6 text-2xl font-bold">Notification Client</div>
-      <ul className="flex flex-col gap-2 px-4">
-        {navItems.map(item => (
-          <li key={item.path}>
+    // <div className="container size-full bg-blue-200 p-1 m-4">
+    <div className="flex bg-blue-200 grow p-1">
+      <div className="flex h-16 items-center sm:ml-2">
+        <div className="flex space-x-4">
+          {navItems.map(item => (
             <NavLink
+              key={item.path}
               to={item.path}
               className={({ isActive }) =>
-                `block py-2 px-4 rounded hover:bg-gray-700 transition ${
-                  isActive ? 'bg-gray-700 font-semibold' : ''
-                }`
+                `sidenav-link${isActive ? ' sidenav-link-active' : ''}`
               }
             >
               {item.name}
             </NavLink>
-          </li>
-        ))}
-      </ul>
-    </nav>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 

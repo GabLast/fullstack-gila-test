@@ -1,4 +1,4 @@
-package com.showcase.application.springbootbackend.controller;
+package com.showcase.application.springbootbackend.controller.notifications;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.showcase.application.springbootbackend.dto.request.notifications.CheckNotificationRequest;
@@ -72,7 +72,7 @@ public class NotificationControllerTest {
 
     @Test
     void testFindAll() throws Exception {
-        mockMvc.perform(get("/api/notification/findAll"))
+        mockMvc.perform(get("/api/notification/findall"))
                 .andExpect(status().isOk());
     }
 

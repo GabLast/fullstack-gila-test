@@ -35,3 +35,4 @@ build/
 
 #h2 database
 data/notificationDb.mv.db
+data/notificationDb.trace.db

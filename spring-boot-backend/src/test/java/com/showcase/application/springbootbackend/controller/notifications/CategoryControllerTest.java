@@ -1,4 +1,4 @@
-package com.showcase.application.springbootbackend.controller;
+package com.showcase.application.springbootbackend.controller.notifications;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.showcase.application.springbootbackend.dto.request.notifications.CategoryRequest;

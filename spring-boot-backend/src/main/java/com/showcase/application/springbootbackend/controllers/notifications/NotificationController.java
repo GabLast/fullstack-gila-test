@@ -1,7 +1,7 @@
 package com.showcase.application.springbootbackend.controllers.notifications;
 
-import com.showcase.application.springbootbackend.dto.request.notifications.NotificationSearchRequest;
 import com.showcase.application.springbootbackend.dto.request.notifications.CheckNotificationRequest;
+import com.showcase.application.springbootbackend.dto.request.notifications.NotificationSearchRequest;
 import com.showcase.application.springbootbackend.services.notifications.NotificationModuleService;
 import com.showcase.application.springbootbackend.services.notifications.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class NotificationController {
                 notificationModuleService.getNotificationById(id), HttpStatus.OK);
     }
 
-    @GetMapping("/findAll")
+    @GetMapping("/findall")
     public ResponseEntity<?> findAll(NotificationSearchRequest notificationSearchRequest) {
         return new ResponseEntity<>(
                 notificationModuleService.findAllFilter(notificationSearchRequest), HttpStatus.OK);

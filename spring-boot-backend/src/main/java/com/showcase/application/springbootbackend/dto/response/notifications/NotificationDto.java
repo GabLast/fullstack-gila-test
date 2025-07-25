@@ -8,6 +8,7 @@ import java.util.Date;
 public record NotificationDto(
         Long id,
         String user,
+        Long userId,
         String category,
         String channel,
         String message,

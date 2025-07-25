@@ -1,8 +1,9 @@
-package com.showcase.application.springbootbackend.controller;
+package com.showcase.application.springbootbackend.controller.notifications;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.showcase.application.springbootbackend.dto.request.notifications.ChannelRequest;
-import com.showcase.application.springbootbackend.models.notifications.Channel;
+import com.showcase.application.springbootbackend.dto.request.notifications.MessageRequest;
+import com.showcase.application.springbootbackend.dto.response.notifications.MessageResponse;
+import com.showcase.application.springbootbackend.models.notifications.Category;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class ChannelControllerTest {
+public class MessageControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -37,35 +38,31 @@ public class ChannelControllerTest {
     }
 
     @Test
-    void testPostThenGetBothReturning200() throws Exception {
+    void postMessageThenGetMessageThenReturnOk() throws Exception {
+
         String json = new ObjectMapper().writeValueAsString(
-                ChannelRequest.builder()
-                        .name("Test Channel")
+                MessageRequest.builder()
+                        .message("My test message for sports")
+                        .category(Category.CategoryType.SPORTS.getName())
                         .build());
 
         MvcResult mvcResult = mockMvc.perform(
-                post("/api/channel")
+                post("/api/message")
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(json)
         ).andExpect(status().isOk()).andReturn();
 
         String jsonResponse = mvcResult.getResponse().getContentAsString();
-        Channel response = objectMapper.readValue(jsonResponse, Channel.class);
+        MessageResponse response = objectMapper.readValue(jsonResponse, MessageResponse.class);
 
-        mockMvc.perform(get("/api/channel" + "?name=" + response.getName()))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void testFindAllForUser() throws Exception {
-        Long id = 1L;
-        mockMvc.perform(get("/api/channel/user" + "?id=" + id))
+        mockMvc.perform(get("/api/message" + "?id=" + response.messageDto().id()))
                 .andExpect(status().isOk());
     }
 
     @Test
     void testFindAll() throws Exception {
-        mockMvc.perform(get("/api/channel/findall"))
+        mockMvc.perform(get("/api/message/findall"))
                 .andExpect(status().isOk());
     }
+
 }

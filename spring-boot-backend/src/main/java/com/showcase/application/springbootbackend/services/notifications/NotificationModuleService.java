@@ -153,7 +153,7 @@ public class NotificationModuleService {
 
         Sort sort;
         String sortColumn = StringUtils.isBlank(notificationSearchRequest.sortColumn()) ? "dateCreated" : notificationSearchRequest.sortColumn();
-        String sortOrder = StringUtils.isBlank(notificationSearchRequest.sortOrder()) ? "ASC" : notificationSearchRequest.sortColumn();
+        String sortOrder = StringUtils.isBlank(notificationSearchRequest.sortOrder()) ? "ASC" : notificationSearchRequest.sortOrder();
         int limit = notificationSearchRequest.limit() == null ? 20 : notificationSearchRequest.limit();
         int offset = notificationSearchRequest.offset() == null ? 0 : notificationSearchRequest.offset();
 
@@ -254,6 +254,7 @@ public class NotificationModuleService {
         return NotificationDto.builder()
                 .id(it.getId())
                 .user(it.getUser().getName())
+                .userId(it.getUser().getId())
                 .category(it.getMessage().getCategory().getName())
                 .channel(it.getChannel().getName())
                 .message(it.getMessage().getMessage())
