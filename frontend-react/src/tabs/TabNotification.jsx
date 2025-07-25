@@ -168,8 +168,8 @@ export function TabNotification() {
         }
     }
 
-    const currentPage = () => Math.floor(offset / limit) + 1;
-    const totalPages = () => Math.ceil(totalItems / limit);
+    // const currentPage = () => Math.floor(offset / limit) + 1;
+    // const totalPages = () => Math.ceil(totalItems / limit);
 
     useEffect(() => {
 
@@ -260,7 +260,7 @@ export function TabNotification() {
                 <br />
 
                 <div className="flex-row">
-                    <label className='p-1 mr-1' htmlFor={"dateStart"}>{"Start Date: "}</label>
+                    <label className='p-1 mr-1' htmlFor={"dateStart"}>{"Received Start Date: "}</label>
                     <input
                         type="date"
                         id="dateStart"
@@ -268,7 +268,7 @@ export function TabNotification() {
                         onChange={(e) => setDateStart(e.target.value)}
                         className="border border-blue-300 p-2 mr-1" />
 
-                    <label className='p-1 mr-1' htmlFor={"dateEnd"}>{"End Date: "}</label>
+                    <label className='p-1 mr-1' htmlFor={"dateEnd"}>{"Received End Date: "}</label>
                     <input
                         type="date"
                         id="dateEnd"

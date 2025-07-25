@@ -1,4 +1,4 @@
-import { useState, useEffect, use } from 'react'
+import { useState, useEffect } from 'react'
 import { CATEGORY_ENDPOINT, MESSAGE_ENDPOINT } from '../config/apiEndPoints';
 import { ApiClient } from '../api/ApiClient';
 
