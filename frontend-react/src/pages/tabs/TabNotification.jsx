@@ -16,9 +16,10 @@ export function TabNotification() {
     const [sortOrder, setSortOrder] = useState('ASC')
     const [enabled, setEnabled] = useState('')
 
-    const [limit, setLimit] = useState(null)
-    const [offset, setOffset] = useState(null)
-    const [totalItems, setTotalItems] = useState(1)
+    const [limit, setLimit] = useState(20)
+    const [offset, setOffset] = useState(0)
+    const [totalItems, setTotalItems] = useState(0)
+    // const [currentPage, setCurrentPage] = useState(1)
 
     const [userList, setUserList] = useState(null)
     const [channelList, setChannelList] = useState(null)
@@ -95,15 +96,43 @@ export function TabNotification() {
     }
 
     function nextPage() {
+        //using using count implementation
         if (offset + limit < totalItems) {
             setOffset(prev => prev + limit);
         }
+
+        //using currentPage implementation
+        //pending: cap page with total pages ceiling
+        // let newOffset = ((currentPage + 1) - 1) * limit
+        // if (newOffset < 0) {
+        //     newOffset = 0
+        // }
+        // console.log("new offset: " + newOffset)
+        // console.log("currentPage: " + (currentPage + 1))
+        // setOffset(newOffset)
+        // setCurrentPage(currentPage + 1)
     }
 
     function prevPage() {
+        //using using count implementation
         if (offset >= limit) {
             setOffset(prev => prev - limit);
         }
+
+        // if ((currentPage - 1) <= 0) {
+        //     setCurrentPage(0)
+        //     setOffset(0)
+        //     console.log("reset page and offset")
+        //     return
+        // }
+        // let newOffset = ((currentPage - 1) - 1) * limit
+        // if (newOffset < 0) {
+        //     newOffset = 0
+        // }
+        // console.log("new offset: " + newOffset)
+        // console.log("currentPage: " + (currentPage - 1))
+        // setOffset(newOffset)
+        // setCurrentPage(currentPage - 1)
     }
 
     // const currentPage = () => Math.floor(offset / limit) + 1;
@@ -115,8 +144,8 @@ export function TabNotification() {
         fetchUsers();
         setSortOrder(sortOrdersList[0].value) // Set default sort order to the first one
         setSortColumn(sortColumnList[0].value) // Set default sort column to the first one
-        setOffset(0);
-        setLimit(20);
+        // setOffset(0);
+        // setLimit(20);
         // fetchNotifications(user, channel, seen,
         //     dateStart, dateEnd, limit, offset, sortColumn, sortOrder, message, enabled);
     }, [])
@@ -274,6 +303,7 @@ export function TabNotification() {
                 <div className="grid grid-cols-2 gap-44">
                     <button
                         onClick={prevPage}
+                        disabled={offset === 0}
                         className="border-2 border-blue-200 p-2 bg-blue-100"
                     >
                         Previous
