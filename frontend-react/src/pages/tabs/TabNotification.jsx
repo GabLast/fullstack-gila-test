@@ -1,5 +1,7 @@
-import { ApiClient } from '../api/ApiClient';
-import { CHANNEL_ENDPOINT, NOTIFICATION_ENDPOINT, USER_ENDPOINT } from '../config/apiEndPoints';
+import { getChannels } from '../../api/channels';
+import { getUsers } from '../../api/users';
+import { getCount, getNotifications, checkNotification } from '../../api/notifications';
+import { booleanList, sortOrdersList } from '../../constants/commonFilters';
 import { useState, useEffect } from 'react'
 
 export function TabNotification() {
@@ -22,22 +24,6 @@ export function TabNotification() {
     const [channelList, setChannelList] = useState(null)
     const [notificationList, setNotificationList] = useState([])
 
-    const booleanList = [{
-        name: "Yes",
-        value: true
-    }, {
-        name: "No",
-        value: false
-    }];
-
-    const sortOrdersList = [{
-        name: "Ascending",
-        value: "ASC"
-    }, {
-        name: "Descending",
-        value: "DESC"
-    }]
-
     const sortColumnList = [
         {
             name: "Date",
@@ -48,76 +34,35 @@ export function TabNotification() {
         }]
 
     const fetchChannels = async () => {
-        try {
-            const response = await ApiClient.get(CHANNEL_ENDPOINT + "/findall")
-
-            setChannelList(response.data)
-        } catch (error) {
-            console.log(error)
-        }
+        const { data } = await getChannels();
+        setChannelList(data || []);
     }
 
     const fetchUsers = async () => {
-        try {
-            const response = await ApiClient.get(USER_ENDPOINT + "/findall")
-
-            setUserList(response.data)
-        } catch (error) {
-            console.log(error)
-        }
+        const { data } = await getUsers();
+        setUserList(data || []);
     }
 
-    const fetchNotifications = async (userId, channelId, seen,
-        dateStart, dateEnd, limit, offset, sortColumn, sortOrder, message, enabled) => {
+    const fetchNotifications = async (
+        userId, channelId, seen,
+        dateStart, dateEnd,
+        limit, offset, sortColumn, sortOrder, message, enabled
+    ) => {
+        const { data } = await getNotifications(
+            userId, channelId, seen,
+            dateStart, dateEnd,
+            limit, offset, sortColumn, sortOrder, message, enabled)
 
-        const params = {
-            userId,
-            channelId,
-            seen,
-            start: dateStart !== '' ? dateStart : null,
-            end: dateEnd !== '' ? dateEnd : null,
-            limit,
-            offset,
-            sortColumn,
-            sortOrder,
-            messageBody: message,
-            enabled
-        }
-
-        await ApiClient.get(NOTIFICATION_ENDPOINT + "/findall", {
-            params: params
-        }).then(response => {
-            setNotificationList(response.data.data)
-        }).catch(error => {
-            console.error("Error fetching notifications: ", error);
-            setNotificationList([]);
-        })
+        setNotificationList(data || []);
     }
 
     const fetchTotalItems = async (userId, channelId, seen,
         dateStart, dateEnd, sortColumn, sortOrder, message, enabled) => {
+        const { data } = await getCount(
+            userId, channelId, seen,
+            dateStart, dateEnd, sortColumn, sortOrder, message, enabled)
 
-        const params = {
-            userId,
-            channelId,
-            seen,
-            start: dateStart !== '' ? dateStart : null,
-            end: dateEnd !== '' ? dateEnd : null,
-            sortColumn,
-            sortOrder,
-            messageBody: message,
-            enabled
-        }
-
-        return await ApiClient.get(NOTIFICATION_ENDPOINT + "/count", {
-            params: params
-        }).then(response => {
-            console.log("Total items: ", response.data);
-            setTotalItems(response.data);
-            return response.data;
-        }).catch(error => {
-            return 0;
-        })
+        setTotalItems(data || 0);
     }
 
     const validate = (notificationId, userId) => {
@@ -131,6 +76,12 @@ export function TabNotification() {
         return errors;
     };
 
+    const postCheckNotification = async (userId, notificationId) => {
+        const { data } = await checkNotification(userId, notificationId);
+        await fetchNotifications(user, channel, seen, dateStart, dateEnd, limit, offset, sortColumn, sortOrder, message, enabled);
+        alert("The notification has been checked successfully!");
+    }
+
     const handleSubmit = async (event, notificationId, userId) => {
 
         event.preventDefault();
@@ -140,20 +91,7 @@ export function TabNotification() {
             alert(`Please fix the following errors:\n${errors.join('\n')}`);
         }
 
-
-        await ApiClient.post(NOTIFICATION_ENDPOINT + "/checknotification", {
-            userDto: {
-                id: userId
-            },
-            notificationId: notificationId
-        }).then((response) => {
-
-            fetchNotifications(user, channel, seen, dateStart, dateEnd, limit, offset, sortColumn, sortOrder, message, enabled);
-            alert("The notification has been checked successfully!");
-
-        }).catch(err => {
-            console.log(err)
-        })
+        postCheckNotification(userId, notificationId);
     }
 
     function nextPage() {
@@ -179,8 +117,8 @@ export function TabNotification() {
         setSortColumn(sortColumnList[0].value) // Set default sort column to the first one
         setOffset(0);
         setLimit(20);
-        fetchNotifications(user, channel, seen,
-            dateStart, dateEnd, limit, offset, sortColumn, sortOrder, message, enabled);
+        // fetchNotifications(user, channel, seen,
+        //     dateStart, dateEnd, limit, offset, sortColumn, sortOrder, message, enabled);
     }, [])
 
     useEffect(() => {
