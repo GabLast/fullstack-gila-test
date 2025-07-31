@@ -4,8 +4,8 @@ import './output.css';
 import SideNav from './components/SideNav';
 import { BrowserRouter, Routes, Route } from 'react-router';
 import { MESSAGE_FORM, NOTIFICATION_TAB } from './config/routes';
-import FormMessage from './forms/FormMessage';
-import { TabNotification } from './tabs/TabNotification';
+import FormMessage from './pages/forms/FormMessage';
+import { TabNotification } from './pages/tabs/TabNotification';
 
 function App() {
   return (

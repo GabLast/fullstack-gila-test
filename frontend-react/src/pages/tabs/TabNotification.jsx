@@ -1,5 +1,7 @@
-import { ApiClient } from '../api/ApiClient';
-import { CHANNEL_ENDPOINT, NOTIFICATION_ENDPOINT, USER_ENDPOINT } from '../config/apiEndPoints';
+import { getChannels } from '../../api/channels';
+import { getUsers } from '../../api/users';
+import { getCount, getNotifications, checkNotification } from '../../api/notifications';
+import { booleanList, sortOrdersList } from '../../constants/commonFilters';
 import { useState, useEffect } from 'react'
 
 export function TabNotification() {
@@ -14,29 +16,14 @@ export function TabNotification() {
     const [sortOrder, setSortOrder] = useState('ASC')
     const [enabled, setEnabled] = useState('')
 
-    const [limit, setLimit] = useState(null)
-    const [offset, setOffset] = useState(null)
-    const [totalItems, setTotalItems] = useState(1)
+    const [limit, setLimit] = useState(20)
+    const [offset, setOffset] = useState(0)
+    const [totalItems, setTotalItems] = useState(0)
+    // const [currentPage, setCurrentPage] = useState(1)
 
     const [userList, setUserList] = useState(null)
     const [channelList, setChannelList] = useState(null)
     const [notificationList, setNotificationList] = useState([])
-
-    const booleanList = [{
-        name: "Yes",
-        value: true
-    }, {
-        name: "No",
-        value: false
-    }];
-
-    const sortOrdersList = [{
-        name: "Ascending",
-        value: "ASC"
-    }, {
-        name: "Descending",
-        value: "DESC"
-    }]
 
     const sortColumnList = [
         {
@@ -48,76 +35,35 @@ export function TabNotification() {
         }]
 
     const fetchChannels = async () => {
-        try {
-            const response = await ApiClient.get(CHANNEL_ENDPOINT + "/findall")
-
-            setChannelList(response.data)
-        } catch (error) {
-            console.log(error)
-        }
+        const { data } = await getChannels();
+        setChannelList(data || []);
     }
 
     const fetchUsers = async () => {
-        try {
-            const response = await ApiClient.get(USER_ENDPOINT + "/findall")
-
-            setUserList(response.data)
-        } catch (error) {
-            console.log(error)
-        }
+        const { data } = await getUsers();
+        setUserList(data || []);
     }
 
-    const fetchNotifications = async (userId, channelId, seen,
-        dateStart, dateEnd, limit, offset, sortColumn, sortOrder, message, enabled) => {
+    const fetchNotifications = async (
+        userId, channelId, seen,
+        dateStart, dateEnd,
+        limit, offset, sortColumn, sortOrder, message, enabled
+    ) => {
+        const { data } = await getNotifications(
+            userId, channelId, seen,
+            dateStart, dateEnd,
+            limit, offset, sortColumn, sortOrder, message, enabled)
 
-        const params = {
-            userId,
-            channelId,
-            seen,
-            start: dateStart !== '' ? dateStart : null,
-            end: dateEnd !== '' ? dateEnd : null,
-            limit,
-            offset,
-            sortColumn,
-            sortOrder,
-            messageBody: message,
-            enabled
-        }
-
-        await ApiClient.get(NOTIFICATION_ENDPOINT + "/findall", {
-            params: params
-        }).then(response => {
-            setNotificationList(response.data.data)
-        }).catch(error => {
-            console.error("Error fetching notifications: ", error);
-            setNotificationList([]);
-        })
+        setNotificationList(data || []);
     }
 
     const fetchTotalItems = async (userId, channelId, seen,
         dateStart, dateEnd, sortColumn, sortOrder, message, enabled) => {
+        const { data } = await getCount(
+            userId, channelId, seen,
+            dateStart, dateEnd, sortColumn, sortOrder, message, enabled)
 
-        const params = {
-            userId,
-            channelId,
-            seen,
-            start: dateStart !== '' ? dateStart : null,
-            end: dateEnd !== '' ? dateEnd : null,
-            sortColumn,
-            sortOrder,
-            messageBody: message,
-            enabled
-        }
-
-        return await ApiClient.get(NOTIFICATION_ENDPOINT + "/count", {
-            params: params
-        }).then(response => {
-            console.log("Total items: ", response.data);
-            setTotalItems(response.data);
-            return response.data;
-        }).catch(error => {
-            return 0;
-        })
+        setTotalItems(data || 0);
     }
 
     const validate = (notificationId, userId) => {
@@ -131,6 +77,12 @@ export function TabNotification() {
         return errors;
     };
 
+    const postCheckNotification = async (userId, notificationId) => {
+        const { data } = await checkNotification(userId, notificationId);
+        await fetchNotifications(user, channel, seen, dateStart, dateEnd, limit, offset, sortColumn, sortOrder, message, enabled);
+        alert("The notification has been checked successfully!");
+    }
+
     const handleSubmit = async (event, notificationId, userId) => {
 
         event.preventDefault();
@@ -140,32 +92,47 @@ export function TabNotification() {
             alert(`Please fix the following errors:\n${errors.join('\n')}`);
         }
 
-
-        await ApiClient.post(NOTIFICATION_ENDPOINT + "/checknotification", {
-            userDto: {
-                id: userId
-            },
-            notificationId: notificationId
-        }).then((response) => {
-
-            fetchNotifications(user, channel, seen, dateStart, dateEnd, limit, offset, sortColumn, sortOrder, message, enabled);
-            alert("The notification has been checked successfully!");
-
-        }).catch(err => {
-            console.log(err)
-        })
+        postCheckNotification(userId, notificationId);
     }
 
     function nextPage() {
+        //using using count implementation
         if (offset + limit < totalItems) {
             setOffset(prev => prev + limit);
         }
+
+        //using currentPage implementation
+        //pending: cap page with total pages ceiling
+        // let newOffset = ((currentPage + 1) - 1) * limit
+        // if (newOffset < 0) {
+        //     newOffset = 0
+        // }
+        // console.log("new offset: " + newOffset)
+        // console.log("currentPage: " + (currentPage + 1))
+        // setOffset(newOffset)
+        // setCurrentPage(currentPage + 1)
     }
 
     function prevPage() {
+        //using using count implementation
         if (offset >= limit) {
             setOffset(prev => prev - limit);
         }
+
+        // if ((currentPage - 1) <= 0) {
+        //     setCurrentPage(0)
+        //     setOffset(0)
+        //     console.log("reset page and offset")
+        //     return
+        // }
+        // let newOffset = ((currentPage - 1) - 1) * limit
+        // if (newOffset < 0) {
+        //     newOffset = 0
+        // }
+        // console.log("new offset: " + newOffset)
+        // console.log("currentPage: " + (currentPage - 1))
+        // setOffset(newOffset)
+        // setCurrentPage(currentPage - 1)
     }
 
     // const currentPage = () => Math.floor(offset / limit) + 1;
@@ -177,10 +144,10 @@ export function TabNotification() {
         fetchUsers();
         setSortOrder(sortOrdersList[0].value) // Set default sort order to the first one
         setSortColumn(sortColumnList[0].value) // Set default sort column to the first one
-        setOffset(0);
-        setLimit(20);
-        fetchNotifications(user, channel, seen,
-            dateStart, dateEnd, limit, offset, sortColumn, sortOrder, message, enabled);
+        // setOffset(0);
+        // setLimit(20);
+        // fetchNotifications(user, channel, seen,
+        //     dateStart, dateEnd, limit, offset, sortColumn, sortOrder, message, enabled);
     }, [])
 
     useEffect(() => {
@@ -336,6 +303,7 @@ export function TabNotification() {
                 <div className="grid grid-cols-2 gap-44">
                     <button
                         onClick={prevPage}
+                        disabled={offset === 0}
                         className="border-2 border-blue-200 p-2 bg-blue-100"
                     >
                         Previous
