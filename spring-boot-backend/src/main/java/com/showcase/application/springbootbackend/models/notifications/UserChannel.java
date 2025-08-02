@@ -19,8 +19,8 @@ import lombok.Setter;
 @RequiredArgsConstructor
 public class UserChannel extends BaseModel {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private User user;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Channel channel;
 }
