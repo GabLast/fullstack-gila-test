@@ -37,17 +37,22 @@ function FormMessage() {
     }
 
     const findMessage = async (id) => {
+
         if (!id) {
             clear()
             return
         }
 
-        await getMessage(id).then(({ data }) => {
-            console.log(data)
+        await getMessage(id).then(({ data, error }) => {
+
+            // console.log(error)
+            if(error) {
+                throw Error(`${error.data.message}`)
+            }
             setMessage(data.message)
             setCategory(data.category)
         }).catch((err) => {
-            alert(`Error when finding the message:\n${err}`);
+            // alert(`Error when finding the message:\n${err}`);
         });
     }
 
@@ -77,7 +82,6 @@ function FormMessage() {
     }
 
     useEffect(() => {
-
         fetchCategories();
         handleParams();
     }, [])
