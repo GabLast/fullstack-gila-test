@@ -13,3 +13,17 @@ export const postMessage = async (category, message) => {
         return { data: null, error: error.response };
     }
 }
+
+export const getMessage = async (id) => {
+    try {
+        const response = await ApiClient.get(MESSAGE_ENDPOINT, {
+            params: {
+                id: id
+            }
+        })
+        
+        return { data: response.data, error: null };
+    } catch (error) {
+        return { data: null, error: error.response };
+    }
+}
