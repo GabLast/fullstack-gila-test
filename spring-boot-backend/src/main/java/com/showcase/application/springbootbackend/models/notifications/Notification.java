@@ -2,6 +2,7 @@ package com.showcase.application.springbootbackend.models.notifications;
 
 import com.showcase.application.springbootbackend.models.BaseModel;
 import com.showcase.application.springbootbackend.models.security.User;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
@@ -33,11 +34,11 @@ import java.util.Date;
 })
 public class Notification extends BaseModel {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private User user;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Message message;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Channel channel;
     private Date dateSeen;
     private boolean seen = false;

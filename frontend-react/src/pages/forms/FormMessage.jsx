@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { getCategories } from '../../api/categories';
-import { postMessage } from '../../api/messages';
-
+import { postMessage, getMessage } from '../../api/messages';
+import { useSearchParams } from 'react-router';
 
 function FormMessage() {
+
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const [categoryList, setCategoryList] = useState(null)
     const [category, setCategory] = useState(undefined)
@@ -21,6 +23,34 @@ function FormMessage() {
         return errors;
     };
 
+    const clear = () => {
+        // clear
+        setMessage('')
+        setCategory(categoryList[0].name) // Reset to first category
+    }
+
+    const handleParams = async () => {
+        const idParam = searchParams.get("id")
+        if (idParam) {
+            await findMessage(idParam)
+        }
+    }
+
+    const findMessage = async (id) => {
+        if (!id) {
+            clear()
+            return
+        }
+
+        await getMessage(id).then(({ data }) => {
+            console.log(data)
+            setMessage(data.message)
+            setCategory(data.category)
+        }).catch((err) => {
+            alert(`Error when finding the message:\n${err}`);
+        });
+    }
+
     const handleSubmit = async (e) => {
 
         e.preventDefault();
@@ -31,12 +61,8 @@ function FormMessage() {
         }
 
         try {
-            const { data } = await postMessage(category, message);
-
-            // clear
-            setMessage('')
-            setCategory(categoryList[0].name) // Reset to first category
-
+            await postMessage(category, message);
+            clear()
             alert("Message sent successfully!");
         } catch (err) {
             console.log(err)
@@ -51,7 +77,9 @@ function FormMessage() {
     }
 
     useEffect(() => {
+
         fetchCategories();
+        handleParams();
     }, [])
 
     return (

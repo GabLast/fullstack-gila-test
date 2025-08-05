@@ -21,7 +21,7 @@ import lombok.ToString;
 @ToString
 public class Message extends BaseModel {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Category category;
     @Column(nullable = false, columnDefinition = "longtext")
     private String message;
